@@ -1,0 +1,30 @@
+<?php
+session_start();
+if (!isset($_SESSION["username"])) {
+    header("Location: login.php");
+    exit();
+}
+
+include("connection.php");
+
+if (isset($_GET["nim"])) {
+    $nim = htmlentities(strip_tags(trim($_GET["nim"])));
+    $nim = mysqli_real_escape_string($connection, $nim);
+    
+    // Query hapus data berdasarkan NIM
+    $query = "DELETE FROM student WHERE nim='$nim'";
+    $result = mysqli_query($connection, $query);
+    
+    if ($result) {
+        $message = "Data mahasiswa dengan NIM <b>$nim</b> berhasil dihapus.";
+        $message = urlencode($message);
+        header("Location: student_view.php?message={$message}");
+        exit();
+    } else {
+        die("Gagal menghapus data: " . mysqli_errno($connection) . " - " . mysqli_error($connection));
+    }
+} else {
+    header("Location: student_view.php");
+    exit();
+}
+?>
